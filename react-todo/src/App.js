@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -7,20 +8,38 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [editingText, setEditingText] = useState('');
 
+  useEffect(() => {
+    axios.get('http://localhost:8080/todos')
+      .then(response => {
+        setTodos(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching todos:", error);
+      });
+  }, []);
+
   const handleAdd = () => {
     if (input) {
-      const newTodo = {
-        id: Date.now(),
-        text: input
-      };
-      setTodos([...todos, newTodo]);
-      setInput('');
+      axios.post('http://localhost:8080/todos', { text: input })
+        .then(response => {
+          setTodos([...todos, response.data]);
+          setInput('');
+        })
+        .catch(error => {
+          console.error("Error adding todo:", error);
+        });
     }
   };
 
   const handleDelete = (id) => {
-    const updatedTodos = todos.filter(todo => todo.id !== id);
-    setTodos(updatedTodos);
+    axios.delete(`http://localhost:8080/todos/${id}`)
+      .then(() => {
+        const updatedTodos = todos.filter(todo => todo.id !== id);
+        setTodos(updatedTodos);
+      })
+      .catch(error => {
+        console.error("Error deleting todo:", error);
+      });
   };
 
   const handleEdit = (id) => {
@@ -32,12 +51,20 @@ function App() {
   };
 
   const handleUpdate = () => {
-    const updatedTodos = todos.map(todo => 
-      todo.id === editingId ? { ...todo, text: editingText } : todo
-    );
-    setTodos(updatedTodos);
-    setEditingId(null);
-    setEditingText('');
+    if (editingText) {
+      axios.put(`http://localhost:8080/todos/${editingId}`, { id: editingId, text: editingText })
+        .then(response => {
+          const updatedTodos = todos.map(todo => 
+            todo.id === editingId ? response.data : todo
+          );
+          setTodos(updatedTodos);
+          setEditingId(null);
+          setEditingText('');
+        })
+        .catch(error => {
+          console.error("Error updating todo:", error);
+        });
+    }
   };
 
   return (
