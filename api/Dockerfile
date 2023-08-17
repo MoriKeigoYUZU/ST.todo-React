@@ -8,11 +8,8 @@ RUN go mod download
 COPY ../cmd cmd/
 COPY ../src src/
 
-RUN ls -l
-RUN go build -o ./app ./cmd
+RUN go install github.com/cosmtrek/air@v1.27.3
 
 EXPOSE 8000
 
-ENV GIN_MODE=release
-
-CMD ["go", "run", "./cmd"]
+CMD ["air", "-c", ".air.toml"]
