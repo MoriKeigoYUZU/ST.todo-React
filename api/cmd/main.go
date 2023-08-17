@@ -13,7 +13,7 @@ type Todo struct {
 	Text string `json:"text"`
 }
 
-var todos []Todo
+var todos []Todo // これが箱です
 var idCounter int
 var todoLock sync.Mutex
 
@@ -27,6 +27,16 @@ func main() {
 	r.DELETE("/todos/:id", deleteTodo)
 
 	r.Run(":8080")
+}
+
+// バリデーション
+func bindTodo(c *gin.Context) (Todo, error) {
+	var todo Todo
+	if err := c.ShouldBindJSON(&todo); err != nil {
+		c.JSON(400, gin.H{"error": "Bad request"})
+		return Todo{}, err
+	}
+	return todo, nil
 }
 
 func getTodos(c *gin.Context) {
@@ -47,15 +57,6 @@ func addTodo(c *gin.Context) {
 	}
 
 	c.JSON(201, addAndFetchTodo(todo))
-}
-
-func bindTodo(c *gin.Context) (Todo, error) {
-	var todo Todo
-	if err := c.ShouldBindJSON(&todo); err != nil {
-		c.JSON(400, gin.H{"error": "Bad request"})
-		return Todo{}, err
-	}
-	return todo, nil
 }
 
 func addAndFetchTodo(todo Todo) Todo {
@@ -82,14 +83,6 @@ func updateTodo(c *gin.Context) {
 	}
 }
 
-func deleteTodo(c *gin.Context) {
-	if deleteTodoByID(c.Param("id")) {
-		c.JSON(200, gin.H{"status": "Todo deleted"})
-	} else {
-		c.JSON(404, gin.H{"error": "Todo not found"})
-	}
-}
-
 func updateAndFetchTodo(id string, updatedTodo Todo) (Todo, bool) {
 	todoLock.Lock()
 	defer todoLock.Unlock()
@@ -106,6 +99,14 @@ func updateAndFetchTodo(id string, updatedTodo Todo) (Todo, bool) {
 		}
 	}
 	return Todo{}, false
+}
+
+func deleteTodo(c *gin.Context) {
+	if deleteTodoByID(c.Param("id")) {
+		c.JSON(200, gin.H{"status": "Todo deleted"})
+	} else {
+		c.JSON(404, gin.H{"error": "Todo not found"})
+	}
 }
 
 func deleteTodoByID(id string) bool {
