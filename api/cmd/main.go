@@ -13,7 +13,7 @@ type Todo struct {
 	Text string `json:"text"`
 }
 
-var todos []Todo // これが箱です
+var todos = make([]Todo, 0)
 var idCounter int
 var todoLock sync.Mutex
 
