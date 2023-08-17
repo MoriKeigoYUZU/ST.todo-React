@@ -1,7 +1,7 @@
 package main
 
 import (
-	"strconv"
+	"fmt"
 	"sync"
 
 	"github.com/gin-contrib/cors"
@@ -87,17 +87,9 @@ func updateAndFetchTodo(id string, updatedTodo Todo) (Todo, bool) {
 	todoLock.Lock()
 	defer todoLock.Unlock()
 
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		return Todo{}, false
-	}
+	fmt.Println(id)
+	fmt.Println(updatedTodo)
 
-	for index, todo := range todos {
-		if todo.ID == idInt {
-			todos[index].Text = updatedTodo.Text
-			return todos[index], true
-		}
-	}
 	return Todo{}, false
 }
 
@@ -113,16 +105,7 @@ func deleteTodoByID(id string) bool {
 	todoLock.Lock()
 	defer todoLock.Unlock()
 
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		return false
-	}
+	fmt.Println(id)
 
-	for index, todo := range todos {
-		if todo.ID == idInt {
-			todos = append(todos[:index], todos[index+1:]...)
-			return true
-		}
-	}
 	return false
 }
