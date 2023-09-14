@@ -1,28 +1,28 @@
 services:
-  react-todo:
-    container_name: react-todo
-    build:
-      context: ./react-todo
-      dockerfile: Dockerfile
-    volumes:
-      - ./react-todo:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+  # react-todo:
+  #   container_name: react-todo
+  #   build:
+  #     context: ./react-todo
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ./react-todo:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
 
-  api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./api:/app
+  # api:
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - ./api:/app
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
@@ -30,7 +30,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
 
